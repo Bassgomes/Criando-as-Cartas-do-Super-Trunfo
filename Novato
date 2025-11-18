@@ -1,0 +1,154 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h> // Necessária para funções futuras, embora não essencial para esta implementação simples
+
+// Constante para definir o tamanho máximo do inventário
+#define MAX_ITENS 10
+
+// Variável global para rastrear o número atual de itens na mochila.
+int totalItens = 0;
+
+// ====================================================================
+// DEFINIÇÃO DA STRUCT (Requisito: Criação da struct)
+// A struct 'Item' agrega informações essenciais de um objeto no inventário.
+// ====================================================================
+typedef struct {
+    char nome[30];      // Nome do item (ex: Pistola, Kit Médico)
+    char tipo[20];      // Tipo do item (ex: Arma, Munição, Cura, Ferramenta)
+    int quantidade;     // Quantidade em posse do jogador
+} Item;
+
+// Vetor de structs para simular a mochila (Inventário)
+// (Requisito: Vetor de structs)
+Item inventario[MAX_ITENS];
+
+// ====================================================================
+// PROTÓTIPOS DAS FUNÇÕES OBRIGATÓRIAS
+// ====================================================================
+void exibirMenu();
+void inserirItem();
+void removerItem();
+void listarItens();
+int buscarItem(const char *nomeBusca); // Retorna o índice do item ou -1 se não encontrado
+
+// ====================================================================
+// FUNÇÃO PRINCIPAL (MAIN)
+// Controla o fluxo de execução e a interação com o usuário.
+// ====================================================================
+int main() {
+    int opcao;
+
+    printf("\n BEM-VINDO(A) ao Sistema de Inventário (Mochila de Loot) \n");
+
+    // Laço principal para manter o programa em execução até o usuário sair.
+    do {
+        exibirMenu(); // Exibe as opções disponíveis ao jogador
+        printf("Escolha uma opção: ");
+        // Leitura da opção, usando scanf para inteiros.
+        if (scanf("%d", &opcao) != 1) {
+            // Limpa o buffer de entrada em caso de erro (ex: entrada não numérica)
+            while (getchar() != '\n'); 
+            opcao = 0; // Define opção inválida para repetir o loop
+        } else {
+            // Garante que o buffer de entrada está limpo para a próxima leitura
+            while (getchar() != '\n'); 
+        }
+
+
+        switch (opcao) {
+            case 1:
+                inserirItem();
+                break;
+            case 2:
+                removerItem();
+                break;
+            case 3:
+                listarItens();
+                break;
+            case 4:
+                // Implementa a funcionalidade de busca, pedindo o nome.
+                char nomeBusca[30];
+                printf("\n Digite o NOME do item que deseja buscar: ");
+                // Usa fgets para ler o nome com espaços, se necessário (até 29 caracteres + \0).
+                fgets(nomeBusca, 30, stdin);
+                // Remove o '\n' que o fgets adiciona.
+                nomeBusca[strcspn(nomeBusca, "\n")] = 0;
+
+                int indice = buscarItem(nomeBusca);
+                if (indice != -1) {
+                    printf("\n Item ENCONTRADO:\n");
+                    printf("   Nome: %s\n", inventario[indice].nome);
+                    printf("   Tipo: %s\n", inventario[indice].tipo);
+                    printf("   Quantidade: %d\n", inventario[indice].quantidade);
+                } else {
+                    printf("\n Item \"%s\" NÃO encontrado na mochila.\n", nomeBusca);
+                }
+                break;
+            case 5:
+                printf("\n Fechando a mochila. Até a próxima fase!\n");
+                break;
+            default:
+                printf("\n Opção inválida. Por favor, escolha uma das opções do menu.\n");
+        }
+        
+        // Listagem dos itens após cada operação (Requisito: Listagem após cada operação)
+        if (opcao >= 1 && opcao <= 4) {
+            listarItens();
+        }
+
+    } while (opcao != 5);
+
+    return 0;
+}
+
+
+// ====================================================================
+// FUNÇÃO EXIBIR MENU (Requisito: Usabilidade)
+// Exibe as opções de interação ao jogador.
+// ====================================================================
+void exibirMenu() {
+    printf("\n--- MENU DA MOCHILA ---\n");
+    printf("1. Cadastrar Novo Item\n");
+    printf("2. Remover Item pelo Nome\n");
+    printf("3. Listar Todos os Itens\n");
+    printf("4. Buscar Item pelo Nome\n");
+    printf("5. Sair\n");
+    printf("-------------------------\n");
+}
+
+// ====================================================================
+// FUNÇÃO INSERIR ITEM (Requisito: Cadastro de itens)
+// Permite adicionar um novo item ao vetor 'inventario'.
+// ====================================================================
+void inserirItem() {
+    // Verifica se a mochila já atingiu a capacidade máxima (10 itens).
+    if (totalItens >= MAX_ITENS) {
+        printf("\n A mochila está CHEIA! Não é possível carregar mais itens.\n");
+        return; // Sai da função
+    }
+
+    printf("\n CADASTRO DE NOVO ITEM\n");
+
+    // Preenche os dados no índice atual (totalItens).
+    printf("   Nome do Item (max 29 chars): ");
+    // Uso de fgets para leitura de strings
+    fgets(inventario[totalItens].nome, 30, stdin);
+    // Remove o '\n' que o fgets adiciona.
+    inventario[totalItens].nome[strcspn(inventario[totalItens].nome, "\n")] = 0;
+    
+    printf("   Tipo do Item (ex: Arma, Munição, Cura) (max 19 chars): ");
+    fgets(inventario[totalItens].tipo, 20, stdin);
+    inventario[totalItens].tipo[strcspn(inventario[totalItens].tipo, "\n")] = 0;
+
+    printf("   Quantidade: ");
+    scanf("%d", &inventario[totalItens].quantidade);
+    // Limpa o buffer de entrada após scanf.
+    while (getchar() != '\n'); 
+    
+    // Atualiza a contagem de itens na mochila.
+    totalItens++;
+
+    printf("\n Item \"%s\" adicionado à mochila com sucesso!\n", inventario[totalItens-1].nome);
+}
+
+//
