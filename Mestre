@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h> // Necessária para medir o tempo de execução
+
+// ====================================================================
+// CONSTANTES E STRUCTS
+// ====================================================================
+#define MAX_COMPONENTES 20
+// O componente-chave necessário para iniciar a montagem
+#define CHAVE_ATIVACAO "Chip Central" 
+
+// Estrutura para representar os componentes da torre de resgate (Requisito 1)
+typedef struct {
+    char nome[30];
+    char tipo[20]; // Ex: "Controle", "Suporte", "Propulsao"
+    int prioridade; // De 1 (mais alta) a 10 (mais baixa)
+} Componente;
+
+// Variáveis globais para rastrear o inventário e o tamanho atual
+Componente inventario[MAX_COMPONENTES];
+int totalComponentes = 0;
+
+// Variáveis globais para medição de desempenho
+long long comparacoes = 0;
+clock_t tempoInicial, tempoFinal;
+double tempoExecucao;
+
+// ====================================================================
+// PROTÓTIPOS DE FUNÇÕES
+// ====================================================================
+
+// Funções de Utilitário
+void limparBuffer();
+void exibirMenuPrincipal();
+void mostrarComponentes();
+void inserirComponente();
+void inicializarInventarioComDadosTeste(); // Para facilitar os testes
+
+// Funções de Ordenação (Requisito 3)
+void bubbleSortNome();
+void insertionSortTipo();
+void selectionSortPrioridade();
+
+// Funções de Busca (Requisito 4)
+int buscaBinariaPorNome(const char *nomeBusca);
+
+// ====================================================================
+// FUNÇÃO PRINCIPAL (MAIN)
+// ====================================================================
+int main() {
+    int opcao;
+
+    // Inicializa com alguns dados para facilitar o teste imediato
+    inicializarInventarioComDadosTeste(); 
+
+    printf("\n MÓDULO AVANÇADO DE ORGANIZAÇÃO DA TORRE DE RESGATE \n");
+
+    do {
+        exibirMenuPrincipal();
+        printf("Escolha uma opção (0 para sair): ");
+        if (scanf("%d", &opcao) != 1) {
+            limparBuffer();
+            opcao = -1; 
+        } else {
+            limparBuffer();
+        }
+
+        comparacoes = 0; // Zera o contador de comparações a cada operação de ordenação
+
+        switch (opcao) {
+            case 1: inserirComponente(); break;
+            case 2:
+                // Medição de desempenho com Bubble Sort (Requisito 5)
+                tempoInicial = clock();
+                bubbleSortNome();
+                tempoFinal =
